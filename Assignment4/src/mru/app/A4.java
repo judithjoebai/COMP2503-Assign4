@@ -72,6 +72,7 @@ public class A4 {
 		 * to get each word object. 
 		 */	
 		
+//		Iterator<String> avengerIterator = (Iterator<String>) (avengerHashMap);
 		
 	}
 
@@ -115,6 +116,29 @@ public class A4 {
 		return word;
 		
 	}
+	
+	private void updateHashMap(String word) {
+		
+		for(int i=0; i < avengerRoster.length; i++) {
+			if(word.equals(avengerRoster[i][0])|| word.equals(avengerRoster[i][1]) || word.equals(avengerRoster[i][2])) {
+				Avenger newAvenger = new Avenger();
+				newAvenger.setHeroAlias(avengerRoster[i][0]);
+				newAvenger.setHeroName(avengerRoster[i][1]);
+				newAvenger.setPerformer(avengerRoster[i][2]);
+			}
+		}
+		
+//		Avenger aveng = findAvenger(word);
+		
+		
+		
+		//aven.setMentionOrder(avengerHashMap.size() + 1);
+		//avengerHashMap.put(aven.HeroAlias, aven)
+	}
+	
+//	private Avenger findAvenger(String word) {
+//		//todo
+//	}
 
 	/**
 	 * print the results
