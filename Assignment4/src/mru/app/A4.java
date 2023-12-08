@@ -72,7 +72,7 @@ public class A4 {
 		 * to get each word object. 
 		 */	
 		
-//		Iterator<String> avengerIterator = (Iterator<String>) (avengerHashMap);
+		Iterator<Avenger> avengerIterator = avengerHashMap.iterator();
 		
 	}
 
@@ -98,7 +98,7 @@ public class A4 {
 		
 			if(!word.isEmpty()) {
 				totalWordCount++;
-			//updateAvenger
+				updateHashMap(word);
 			}
 		}
 
@@ -119,26 +119,53 @@ public class A4 {
 	
 	private void updateHashMap(String word) {
 		
-		for(int i=0; i < avengerRoster.length; i++) {
-			if(word.equals(avengerRoster[i][0])|| word.equals(avengerRoster[i][1]) || word.equals(avengerRoster[i][2])) {
-				Avenger newAvenger = new Avenger();
+		Avenger newAvenger = new Avenger();
+		Avenger aveng = findAvenger(word);
+		
+		for (int i=0; i < avengerRoster.length; i++) {
+			if (word.equals(avengerRoster[i][0])|| word.equals(avengerRoster[i][1]) || word.equals(avengerRoster[i][2])) {
 				newAvenger.setHeroAlias(avengerRoster[i][0]);
 				newAvenger.setHeroName(avengerRoster[i][1]);
 				newAvenger.setPerformer(avengerRoster[i][2]);
 			}
+			
+			if(aveng != null) {
+				if (word.equals(avengerRoster[i][0]))
+					aveng.setAliasFreq(aveng.getAliasFreq() + 1);
+				else if (word.equals(avengerRoster[i][1]))
+					aveng.setNameFreq(aveng.getNameFreq() + 1);
+				else if (word.equals(avengerRoster[i][2]))
+					aveng.setPerformerFreq(aveng.getPerformerFreq() + 1);
+			}else {
+				
+				aveng = newAvenger;
+				
+				if (word.equals(avengerRoster[i][0]))
+					aveng.setAliasFreq(1);
+				else if (word.equals(avengerRoster[i][1]))
+					aveng.setNameFreq(1);
+				else if (word.equals(avengerRoster[1][2]))
+					aveng.setPerformerFreq(1);
+				
+			
+				aveng.setMentionOrder(avengerHashMap.size() + 1);
+				//avengerHashMap.put(aveng.heroAlias, aveng);
+			}
 		}
-		
-//		Avenger aveng = findAvenger(word);
-		
-		
-		
-		//aven.setMentionOrder(avengerHashMap.size() + 1);
-		//avengerHashMap.put(aven.HeroAlias, aven)
 	}
 	
-//	private Avenger findAvenger(String word) {
-//		//todo
-//	}
+	private Avenger findAvenger(String word) {
+		
+		Iterator<Avenger> iterate = avengerHashMap.iterator();
+		
+		while(iterate.hasNext()) {
+			Avenger foundAvenger = iterate.next();
+			
+			if(foundAvenger.getHeroName().equalsIgnoreCase(word) || foundAvenger.getHeroAlias().equalsIgnoreCase(word) || foundAvenger.getPerformer().equalsIgnoreCase(word))
+				return foundAvenger;
+		}
+		return null;
+	}
 
 	/**
 	 * print the results
