@@ -27,8 +27,14 @@ public class A4 {
 			{ "spiderman", "parker", "holland" }, { "wintersoldier", "barnes", "stan" } };
 
 	private int topN = 4;
-	private int totalwordcount = 0;
+	private int totalWordCount = 0;
 	private Scanner input = new Scanner(System.in);
+	private HashMap<String, Avenger> avengerHashMap = new HashMap<>();
+	private TreeMap<Avenger, String> alphabeticalTreeMap = new TreeMap<>();
+	private TreeMap<Avenger, Integer> mentionTreeMap = new TreeMap<>(new AvengerMentionComparator());
+	private TreeMap<Avenger, Integer> PopularAvengerTreeMap = new TreeMap<>();
+	private TreeMap<Avenger, Integer> PopularPerformerTreeMap = new TreeMap<>();
+	
 
 	/* TODO:
 	 * Create the necessary hashMap and treeMap objects to keep track of the Avenger objects 
@@ -64,7 +70,9 @@ public class A4 {
 		 * For example, you can create an iterator object over 
 		 * the 'key set' of the HashMap and use the next() method in a loop
 		 * to get each word object. 
-		 */		
+		 */	
+		
+		
 	}
 
 	/**
@@ -82,7 +90,30 @@ public class A4 {
 		 * newly created avenger to the hashMap, remember to set the frequency, and 
 		 * to keep track of the mention order
 		 */
+		
+		while(input.hasNext()) {
+			String word = input.next();
+			word = cleanWord(word);
+		
+			if(!word.isEmpty()) {
+				totalWordCount++;
+			//updateAvenger
+			}
+		}
 
+	}
+	
+	private String cleanWord(String next) {
+		String word;
+		int index = next.indexOf('\'');
+		if(index != -1) {
+			word = next.substring(0, index).toLowerCase().trim().replaceAll("[^a-z]", "");
+		} else {
+			word = next.toLowerCase().trim().replaceAll("[^a-z]","");
+		}
+			
+		return word;
+		
 	}
 
 	/**
@@ -103,7 +134,7 @@ public class A4 {
 		 */
 		
 		
-		System.out.println("Total number of words: " + totalwordcount);
+		System.out.println("Total number of words: " + totalWordCount);
 		//System.out.println("Number of Avengers Mentioned: " + ??);
 		System.out.println();
 
