@@ -1,9 +1,13 @@
 package mru.app;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeMap;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Collection;
 
 /**
@@ -29,11 +33,14 @@ public class A4 {
 	private int topN = 4;
 	private int totalWordCount = 0;
 	private Scanner input = new Scanner(System.in);
-	private HashMap<String, Avenger> avengerHashMap = new HashMap<>();
+	private HashMap<Avenger, String> avengerHashMap = new HashMap<>();
 	private TreeMap<Avenger, String> alphabeticalTreeMap = new TreeMap<>();
-	private TreeMap<Avenger, Integer> mentionTreeMap = new TreeMap<>(new AvengerMentionComparator());
-	private TreeMap<Avenger, Integer> PopularAvengerTreeMap = new TreeMap<>();
-	private TreeMap<Avenger, Integer> PopularPerformerTreeMap = new TreeMap<>();
+	private TreeMap<Avenger, String> mentionTreeMap = new TreeMap<>(new AvengerMentionComparator());
+	private TreeMap<Avenger, String> popularAvengerTreeMap = new TreeMap<>();
+	private TreeMap<Avenger, String> popularPerformerTreeMap = new TreeMap<>();
+	
+	//delete these when submitting 
+	private String FILE_PATH = "res/input1.txt";
 	
 
 	/* TODO:
@@ -47,12 +54,22 @@ public class A4 {
 	 * TreeMap constructor. 
 	 */
 	
-	public static void main(String[] args) {
+	/**
+	 * starting point to run the program 
+	 * @throws FileNotFoundException 
+	 */
+	public static void main(String[] args) throws FileNotFoundException {
 		A4 a4 = new A4();
 		a4.run();
 	}
 
-	public void run() {
+	/**
+	 * runs the program by calling a method to read input, 
+	 * calling a method of the created alternative order of the binary search trees
+	 * and calling a method that prints the output 
+	 * @throws FileNotFoundException 
+	 */
+	public void run() throws FileNotFoundException {
 		readInput();
 		createdOrderedTreeMaps();
 		printResults();
@@ -72,15 +89,27 @@ public class A4 {
 		 * to get each word object. 
 		 */	
 		
-		Iterator<Avenger> avengerIterator = avengerHashMap.iterator();
+		Iterator<Map.Entry<Avenger, String>> avengerIterator = avengerHashMap.entrySet().iterator();
+		
+		while (avengerIterator.hasNext()) {
+			Entry<Avenger, String> entry = avengerIterator.next();
+			Avenger avenger = entry.getKey();
+			
+			alphabeticalTreeMap.put(avenger, avenger.getHeroAlias());
+			mentionTreeMap.put(avenger, avenger.getHeroAlias());
+			popularAvengerTreeMap.put(avenger, avenger.getHeroAlias());
+			popularPerformerTreeMap.put(avenger, avenger.getHeroAlias());
+			
+		}
 		
 	}
 
 	/**
-	 * read the input stream and keep track how many times avengers are mentioned by
+	 * read the in stream and keep track how many times avengers are mentioned by
 	 * alias or last name.
+	 * @throws FileNotFoundException 
 	 */
-	private void readInput() {
+	private void readInput() throws FileNotFoundException {
 		/*
 		 * In a loop, while the scanner object has not reached end of stream, - read a
 		 * word. - clean up the word - if the word is not empty, add the word count. -
@@ -92,8 +121,14 @@ public class A4 {
 		 * to keep track of the mention order
 		 */
 		
-		while(input.hasNext()) {
-			String word = input.next();
+		//delete before submission
+		File file = new File(FILE_PATH);
+		//fix
+		Scanner scanner = new Scanner(file);
+		
+		while(scanner.hasNext()) {
+			//fix back to input
+			String word = scanner.next();
 			word = cleanWord(word);
 		
 			if(!word.isEmpty()) {
@@ -104,6 +139,11 @@ public class A4 {
 
 	}
 	
+	/**
+	 * takes a word and cuts off any unnecessary add-ons
+	 * @param next
+	 * @return ret
+	 */
 	private String cleanWord(String next) {
 		String word;
 		int index = next.indexOf('\'');
@@ -117,6 +157,11 @@ public class A4 {
 		
 	}
 	
+	/**
+	 * Reads the given parameter and checks if the word matches with the given array to then either
+	 * add the name into the list or add a frequency
+	 * @param word
+	 */
 	private void updateHashMap(String word) {
 		
 		Avenger newAvenger = new Avenger();
@@ -149,22 +194,27 @@ public class A4 {
 				
 			
 				aveng.setMentionOrder(avengerHashMap.size() + 1);
-				//avengerHashMap.put(aveng.heroAlias, aveng);
+				avengerHashMap.put(aveng, aveng.getHeroAlias());
 			}
 		}
 	}
 	
+	/**
+	 * iterates through the list and matches the word with pre-existing avenger otherwise returns null
+	 * @param word
+	 * @return foundAvenger
+	 */
 	private Avenger findAvenger(String word) {
-		
-		Iterator<Avenger> iterate = avengerHashMap.iterator();
-		
-		while(iterate.hasNext()) {
-			Avenger foundAvenger = iterate.next();
-			
-			if(foundAvenger.getHeroName().equalsIgnoreCase(word) || foundAvenger.getHeroAlias().equalsIgnoreCase(word) || foundAvenger.getPerformer().equalsIgnoreCase(word))
-				return foundAvenger;
-		}
-		return null;
+	    for (Map.Entry<Avenger, String> entry : avengerHashMap.entrySet()) {
+	        Avenger foundAvenger = entry.getKey();
+
+	        if (foundAvenger.getHeroName().equalsIgnoreCase(word) ||
+	            foundAvenger.getHeroAlias().equalsIgnoreCase(word) ||
+	            foundAvenger.getPerformer().equalsIgnoreCase(word)) {
+	            return foundAvenger;
+	        }
+	    }
+	    return null;
 	}
 
 	/**
@@ -186,7 +236,7 @@ public class A4 {
 		
 		
 		System.out.println("Total number of words: " + totalWordCount);
-		//System.out.println("Number of Avengers Mentioned: " + ??);
+		System.out.println("Number of Avengers Mentioned: " + alphabeticalTreeMap.size());
 		System.out.println();
 
 		System.out.println("All avengers in the order they appeared in the input stream:");
@@ -207,5 +257,31 @@ public class A4 {
 		System.out.println("All mentioned avengers in alphabetical order:");
 		// Todo: Print the list of avengers in alphabetical order
 		System.out.println();
+	}
+	
+	/**
+	 * Takes a list and uses the iterator to print the top until the loop is broken
+	 * @param list
+	 */
+	private void printTopName(TreeMap<Avenger, String> list) {
+		
+		Iterator<Entry<Avenger, String>> iterate = list.entrySet().iterator();
+		int count = 0;
+		
+		while (iterate.hasNext() && count < topN) {
+			System.out.println(iterate.next());
+			count++;
+		}
+		
+	}
+	
+	private void printTopNameNoP(TreeMap<Avenger, String> list) {
+		
+		Iterator<Entry<Avenger, String>> iterate = list.entrySet().iterator();
+		
+		while (iterate.hasNext()) {
+			System.out.println(iterate.next());
+		}
+		
 	}
 }
