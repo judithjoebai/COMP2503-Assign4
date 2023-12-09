@@ -1,5 +1,6 @@
 package mru.app;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -38,6 +39,7 @@ public class A4 {
 	private TreeMap<Avenger, String> mentionTreeMap = new TreeMap<>(new AvengerMentionComparator());
 	private TreeMap<Avenger, String> popularAvengerTreeMap = new TreeMap<>();
 	private TreeMap<Avenger, String> popularPerformerTreeMap = new TreeMap<>();
+	private Set<Avenger> mentionedAvengers = new HashSet<>();
 	
 	//delete these when submitting 
 	private String FILE_PATH = "res/input1.txt";
@@ -165,7 +167,7 @@ public class A4 {
 	private void updateHashMap(String word) {
 		
 		Avenger newAvenger = new Avenger();
-		Avenger aveng = findAvenger(word);
+		Avenger existingAvenger = findAvenger(word);
 		
 		for (int i=0; i < avengerRoster.length; i++) {
 			if (word.equals(avengerRoster[i][0])|| word.equals(avengerRoster[i][1]) || word.equals(avengerRoster[i][2])) {
@@ -174,27 +176,30 @@ public class A4 {
 				newAvenger.setPerformer(avengerRoster[i][2]);
 			}
 			
-			if(aveng != null) {
+			 
+			
+			if(existingAvenger != null) {
 				if (word.equals(avengerRoster[i][0]))
-					aveng.setAliasFreq(aveng.getAliasFreq() + 1);
+					existingAvenger.setAliasFreq(existingAvenger.getAliasFreq() + 1);
+				else if (word.equals(avengerRoster[i][1])) 
+					existingAvenger.setNameFreq(existingAvenger.getNameFreq() + 1);
+				else if (word.equals(avengerRoster[i][2])) 
+					existingAvenger.setPerformerFreq(existingAvenger.getPerformerFreq() + 1);
+				}else {
+				
+				existingAvenger = newAvenger;
+				
+				if (word.equals(avengerRoster[i][0]))
+					existingAvenger.setAliasFreq(1);
 				else if (word.equals(avengerRoster[i][1]))
-					aveng.setNameFreq(aveng.getNameFreq() + 1);
+					existingAvenger.setNameFreq(1);
 				else if (word.equals(avengerRoster[i][2]))
-					aveng.setPerformerFreq(aveng.getPerformerFreq() + 1);
-			}else {
-				
-				aveng = newAvenger;
-				
-				if (word.equals(avengerRoster[i][0]))
-					aveng.setAliasFreq(1);
-				else if (word.equals(avengerRoster[i][1]))
-					aveng.setNameFreq(1);
-				else if (word.equals(avengerRoster[1][2]))
-					aveng.setPerformerFreq(1);
+					existingAvenger.setPerformerFreq(1);
 				
 			
-				aveng.setMentionOrder(avengerHashMap.size() + 1);
-				avengerHashMap.put(aveng, aveng.getHeroAlias());
+				existingAvenger.setMentionOrder(avengerHashMap.size() + 1);
+				avengerHashMap.put(existingAvenger, existingAvenger.getHeroAlias());
+				
 			}
 		}
 	}
@@ -236,26 +241,30 @@ public class A4 {
 		
 		
 		System.out.println("Total number of words: " + totalWordCount);
-		System.out.println("Number of Avengers Mentioned: " + alphabeticalTreeMap.size());
+		System.out.println("Number of Avengers Mentioned: " +  alphabeticalTreeMap.size());
 		System.out.println();
 
 		System.out.println("All avengers in the order they appeared in the input stream:");
 		// Todo: Print the list of avengers in the order they appeared in the input
 		// Make sure you follow the formatting example in the sample output
+		printTopNameNoP(mentionTreeMap);
 		System.out.println();
 
 		System.out.println("Top " + topN + " most popular avengers:");
 		// Todo: Print the most popular avengers, see the instructions for tie breaking
 		// Make sure you follow the formatting example in the sample output
+		printTopName(popularAvengerTreeMap);
 		System.out.println();
 
 		System.out.println("Top " + topN + " most popular performers:");
 		// Todo: Print the most popular performer, see the instructions for tie breaking
 		// Make sure you follow the formatting example in the sample output
+		printTopName(popularPerformerTreeMap);
 		System.out.println();
 
 		System.out.println("All mentioned avengers in alphabetical order:");
 		// Todo: Print the list of avengers in alphabetical order
+		printTopNameNoP(alphabeticalTreeMap);
 		System.out.println();
 	}
 	
@@ -269,7 +278,11 @@ public class A4 {
 		int count = 0;
 		
 		while (iterate.hasNext() && count < topN) {
-			System.out.println(iterate.next());
+//			System.out.println(iterate.next());
+//			count++;
+			Map.Entry<Avenger, String> entry = iterate.next();
+			System.out.println(entry.getKey());
+			
 			count++;
 		}
 		
@@ -277,10 +290,14 @@ public class A4 {
 	
 	private void printTopNameNoP(TreeMap<Avenger, String> list) {
 		
-		Iterator<Entry<Avenger, String>> iterate = list.entrySet().iterator();
+//		Iterator<Entry<Avenger, String>> iterate = list.entrySet().iterator();
+//		
+//		while (iterate.hasNext()) {
+//			System.out.println(iterate.next());
+//		}
 		
-		while (iterate.hasNext()) {
-			System.out.println(iterate.next());
+		for(Map.Entry<Avenger, String> entry: list.entrySet()) {
+			System.out.println(entry.getKey());
 		}
 		
 	}
