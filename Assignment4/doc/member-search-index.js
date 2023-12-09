@@ -1,0 +1,1 @@
+memberSearchIndex = [{"p":"mru.app","c":"A4","l":"A4()","u":"%3Cinit%3E()"},{"p":"mru.app","c":"A4","l":"avengerRoster"},{"p":"mru.app","c":"A4","l":"main(String[])","u":"main(java.lang.String[])"},{"p":"mru.app","c":"A4","l":"run()"}];updateSearchResults();

@@ -1,15 +1,12 @@
 package mru.app;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
-import java.util.Set;
 import java.util.TreeMap;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Collection;
+import java.util.Comparator;
 
 /**
  * COMP 2503 Fall 2023 Assignment 4
@@ -35,32 +32,17 @@ public class A4 {
 	private int totalWordCount = 0;
 	private Scanner input = new Scanner(System.in);
 	private HashMap<Avenger, String> avengerHashMap = new HashMap<>();
-	private TreeMap<Avenger, String> alphabeticalTreeMap = new TreeMap<>();
+	private TreeMap<Avenger, String> alphabeticalTreeMap = new TreeMap<>(Comparator.naturalOrder());
 	private TreeMap<Avenger, String> mentionTreeMap = new TreeMap<>(new AvengerMentionComparator());
-	private TreeMap<Avenger, String> popularAvengerTreeMap = new TreeMap<>();
-	private TreeMap<Avenger, String> popularPerformerTreeMap = new TreeMap<>();
-	private Set<Avenger> mentionedAvengers = new HashSet<>();
+	private TreeMap<Avenger, String> popularAvengerTreeMap = new TreeMap<>(new AvengerComparator());
+	private TreeMap<Avenger, String> popularPerformerTreeMap = new TreeMap<>(new PerformerComparator());
 	
-	//delete these when submitting 
-	private String FILE_PATH = "res/input1.txt";
-	
-
-	/* TODO:
-	 * Create the necessary hashMap and treeMap objects to keep track of the Avenger objects 
-	 * Remember that a hashtable does not keep any inherent ordering for its contents.
-	 * But for this assignment we want to be able to create the sorted lists of avenger objects.
-	 * Use TreeMap objects (which are binary search trees, and hence have an
-	 * ordering) for creating the following orders: alphabetical, mention order, most popular avenger, and most popular performer
-	 * The alphabetical order TreeMap must be constructed with the natural order of the Avenger objects.
-	 * The other three orderings must be created by passing the corresponding Comparators to the 
-	 * TreeMap constructor. 
-	 */
 	
 	/**
 	 * starting point to run the program 
 	 * @throws FileNotFoundException 
 	 */
-	public static void main(String[] args) throws FileNotFoundException {
+	public static void main(String[] args) {
 		A4 a4 = new A4();
 		a4.run();
 	}
@@ -71,25 +53,13 @@ public class A4 {
 	 * and calling a method that prints the output 
 	 * @throws FileNotFoundException 
 	 */
-	public void run() throws FileNotFoundException {
+	public void run() {
 		readInput();
 		createdOrderedTreeMaps();
 		printResults();
 	}
 
-	private void createdOrderedTreeMaps() {
-		/* TODO:
-		 * Create an iterator over the key set in the HashMap that keeps track of the avengers
-		 * Add avenger objects to the treeMaps with different orderings.
-		 * 
-		 ** Hint: 
-		 * Note that the HashMap and the TreeMap classes do not implement
-		 * the Iterable interface at the top level, but they have
-		 * methods that return Iterable objects, such as keySet() and entrySet().
-		 * For example, you can create an iterator object over 
-		 * the 'key set' of the HashMap and use the next() method in a loop
-		 * to get each word object. 
-		 */	
+	private void createdOrderedTreeMaps() {	
 		
 		Iterator<Map.Entry<Avenger, String>> avengerIterator = avengerHashMap.entrySet().iterator();
 		
@@ -111,26 +81,12 @@ public class A4 {
 	 * alias or last name.
 	 * @throws FileNotFoundException 
 	 */
-	private void readInput() throws FileNotFoundException {
-		/*
-		 * In a loop, while the scanner object has not reached end of stream, - read a
-		 * word. - clean up the word - if the word is not empty, add the word count. -
-		 * Check if the word is either an avenger alias or last name then - Create a new
-		 * avenger object with the corresponding alias and last name. - if this avenger
-		 * has already been mentioned, increase the corresponding frequency count for the object
-		 * already in the hashMap. - if this avenger has not been mentioned before, add the
-		 * newly created avenger to the hashMap, remember to set the frequency, and 
-		 * to keep track of the mention order
-		 */
+	private void readInput() {
 		
-		//delete before submission
-		File file = new File(FILE_PATH);
-		//fix
-		Scanner scanner = new Scanner(file);
 		
-		while(scanner.hasNext()) {
+		while(input.hasNext()) {
 			//fix back to input
-			String word = scanner.next();
+			String word = input.next();
 			word = cleanWord(word);
 		
 			if(!word.isEmpty()) {
@@ -144,7 +100,7 @@ public class A4 {
 	/**
 	 * takes a word and cuts off any unnecessary add-ons
 	 * @param next
-	 * @return ret
+	 * @return word
 	 */
 	private String cleanWord(String next) {
 		String word;
@@ -174,33 +130,35 @@ public class A4 {
 				newAvenger.setHeroAlias(avengerRoster[i][0]);
 				newAvenger.setHeroName(avengerRoster[i][1]);
 				newAvenger.setPerformer(avengerRoster[i][2]);
-			}
+			
 			
 			 
 			
-			if(existingAvenger != null) {
-				if (word.equals(avengerRoster[i][0]))
-					existingAvenger.setAliasFreq(existingAvenger.getAliasFreq() + 1);
-				else if (word.equals(avengerRoster[i][1])) 
-					existingAvenger.setNameFreq(existingAvenger.getNameFreq() + 1);
-				else if (word.equals(avengerRoster[i][2])) 
-					existingAvenger.setPerformerFreq(existingAvenger.getPerformerFreq() + 1);
-				}else {
+				if(existingAvenger != null) {
+					if (word.equals(avengerRoster[i][0]))
+						existingAvenger.setAliasFreq(existingAvenger.getAliasFreq() + 1);
+					else if (word.equals(avengerRoster[i][1])) 
+						existingAvenger.setNameFreq(existingAvenger.getNameFreq() + 1);
+					else if (word.equals(avengerRoster[i][2])) 
+						existingAvenger.setPerformerFreq(existingAvenger.getPerformerFreq() + 1);
+					}else {
+					
+					existingAvenger = newAvenger;
+					
+					if (word.equals(avengerRoster[i][0]))
+						existingAvenger.setAliasFreq(1);
+					else if (word.equals(avengerRoster[i][1]))
+						existingAvenger.setNameFreq(1);
+					else if (word.equals(avengerRoster[i][2]))
+						existingAvenger.setPerformerFreq(1);
+					
 				
-				existingAvenger = newAvenger;
-				
-				if (word.equals(avengerRoster[i][0]))
-					existingAvenger.setAliasFreq(1);
-				else if (word.equals(avengerRoster[i][1]))
-					existingAvenger.setNameFreq(1);
-				else if (word.equals(avengerRoster[i][2]))
-					existingAvenger.setPerformerFreq(1);
-				
-			
-				existingAvenger.setMentionOrder(avengerHashMap.size() + 1);
-				avengerHashMap.put(existingAvenger, existingAvenger.getHeroAlias());
-				
+					existingAvenger.setMentionOrder(avengerHashMap.size() + 1);
+					avengerHashMap.put(existingAvenger, existingAvenger.getHeroAlias());
+					
+				}
 			}
+	
 		}
 	}
 	
@@ -226,44 +184,28 @@ public class A4 {
 	 * print the results
 	 */
 	private void printResults() {
-		/*
-		 * Please first read the documentation for TreeMap to see how to 
-		 * iterate over a TreeMap data structure in Java.
-		 *  
-		 * Hint for printing the required list of avenger objects:
-		 * Note that the TreeMap class does not implement
-		 * the Iterable interface at the top level, but it has
-		 * methods that return Iterable objects.
-		 * You must either create an iterator over the 'key set',
-		 * or over the values 'collection' in the TreeMap.
-		 * 
-		 */
-		
 		
 		System.out.println("Total number of words: " + totalWordCount);
 		System.out.println("Number of Avengers Mentioned: " +  alphabeticalTreeMap.size());
 		System.out.println();
 
 		System.out.println("All avengers in the order they appeared in the input stream:");
-		// Todo: Print the list of avengers in the order they appeared in the input
-		// Make sure you follow the formatting example in the sample output
+		// Prints the list of avengers in the order they appeared in the input
 		printTopNameNoP(mentionTreeMap);
 		System.out.println();
 
 		System.out.println("Top " + topN + " most popular avengers:");
-		// Todo: Print the most popular avengers, see the instructions for tie breaking
-		// Make sure you follow the formatting example in the sample output
+		// Prints the most popular avengers
 		printTopName(popularAvengerTreeMap);
 		System.out.println();
 
 		System.out.println("Top " + topN + " most popular performers:");
-		// Todo: Print the most popular performer, see the instructions for tie breaking
-		// Make sure you follow the formatting example in the sample output
+		// Prints the most popular performer
 		printTopName(popularPerformerTreeMap);
 		System.out.println();
 
 		System.out.println("All mentioned avengers in alphabetical order:");
-		// Todo: Print the list of avengers in alphabetical order
+		// Prints the list of avengers in alphabetical order
 		printTopNameNoP(alphabeticalTreeMap);
 		System.out.println();
 	}
@@ -278,8 +220,6 @@ public class A4 {
 		int count = 0;
 		
 		while (iterate.hasNext() && count < topN) {
-//			System.out.println(iterate.next());
-//			count++;
 			Map.Entry<Avenger, String> entry = iterate.next();
 			System.out.println(entry.getKey());
 			
@@ -288,13 +228,12 @@ public class A4 {
 		
 	}
 	
+	/**
+	 * Takes a list and uses the iterator to print the entries of the tree map
+	 * @param list
+	 */
 	private void printTopNameNoP(TreeMap<Avenger, String> list) {
 		
-//		Iterator<Entry<Avenger, String>> iterate = list.entrySet().iterator();
-//		
-//		while (iterate.hasNext()) {
-//			System.out.println(iterate.next());
-//		}
 		
 		for(Map.Entry<Avenger, String> entry: list.entrySet()) {
 			System.out.println(entry.getKey());
